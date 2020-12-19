@@ -61,6 +61,7 @@
         <div
           class="col-md-3"
           style="background-color: #f8f9fa; height: auto; padding-left: 2%"
+          id="search-container"
         >
           <h3
             class="main-title"
@@ -103,10 +104,36 @@
     </section>
 
     <script type="text/javascript">
+      // Created Elements
+
       var searchInputEl = $("#searchQueryForm");
       var searchButtonEl = $("#search-button");
+      var searchContainerEl = $("#search-container");
+      var recentSearchDiv = $("<div>");
+      recentSearchDiv.attr("style", "margin-top: 2%; margin-bottom: 10%");
+      searchContainerEl.append(recentSearchDiv);
+
+      //Created Variables
+
+      var searchArray = [];
+
+      //Seach Button
 
       $(searchButtonEl).on("click", function () {
+        // Recent Search
+
+        var recentSearchBtn = $("<button>");
+        var recentSearchTxt = $("<h4>");
+        recentSearchBtn.attr("class", "recent-search");
+        recentSearchBtn.attr(
+          "style",
+          "border-style: solid; border-width: 1px; border-color: gray; background-color: white; border-radius: 5px; border-bottom-left-radius: 0px; border-bottom-right-radius: 0px; border-bottom: white; text-align: left; width: 100%; height: 50px;"
+        );
+        recentSearchBtn.text(searchInputEl.val());
+        recentSearchDiv.append(recentSearchBtn);
+
+        // API Call
+
         var city = searchInputEl.val();
         var queryUrl =
           "http://api.openweathermap.org/data/2.5/weather?q=" +
@@ -121,9 +148,7 @@
         });
       });
 
-      $(document).ready(function () {
-        
-      });
+      $(document).ready(function () {});
     </script>
   </body>
 </html>
