@@ -75,8 +75,9 @@
             style="width: 70%; float: left; margin-bottom: 5%"
           ></textarea>
           <button
-            type="search-button"
+            type="button"
             class="btn btn-primary"
+            id="search-button"
             style="width: auto"
           >
             <i class="fas fa-search"></i>
@@ -102,8 +103,11 @@
     </section>
 
     <script type="text/javascript">
-      $(document).ready(function () {
-        var city = "Atlanta";
+      var searchInputEl = $("#searchQueryForm");
+      var searchButtonEl = $("#search-button");
+
+      $(searchButtonEl).on("click", function () {
+        var city = searchInputEl.val();
         var queryUrl =
           "http://api.openweathermap.org/data/2.5/weather?q=" +
           city +
@@ -115,6 +119,10 @@
         }).then(function (response) {
           console.log(response);
         });
+      });
+
+      $(document).ready(function () {
+        
       });
     </script>
   </body>
