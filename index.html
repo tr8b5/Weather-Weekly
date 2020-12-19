@@ -28,6 +28,9 @@
 
     <!-- JQuery CDN -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <!-- Font Awsome -->
+    <script src="https://kit.fontawesome.com/8997007773.js" crossorigin="anonymous"></script>
   </head>
   <body>
     <section>
@@ -48,8 +51,8 @@
     <section>
       <div class="row">
         <div
-          class="col-3"
-          style="background-color: #F8F9FA; width: 30%; height: auto"
+          class="col-md-3"
+          style="background-color: #F8F9FA; height: auto; padding-left: 2%;"
         >
           <h3
             class="main-title"
@@ -57,6 +60,14 @@
           >
             Search for city:
           </h3>
+          <textarea class="form-control" id="searchQueryForm" rows="1" style="width: 70%; float: left; margin-bottom: 5%;"></textarea>
+          <button type="button" class="btn btn-primary" style="width: auto;"><i class="fas fa-search"></i></button>
+        </div>
+        <div class="col-md-9" style="padding-top: 1%;">
+            <div class="city-weather-block" style="border-style: solid; border-width: 1px; border-color: gray; background-color: white; border-radius: 5px;">
+                <h3 class="city-title">Atlanta</h3>
+            </div>
+
         </div>
       </div>
     </section>
