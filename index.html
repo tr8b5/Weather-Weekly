@@ -127,7 +127,6 @@
       //Created Variables
 
       var storedCities = JSON.parse(localStorage.getItem("Cities"));
-      var storedCityArray = storedCities;
       var searchArray = [];
 
       //Seach Button
@@ -163,7 +162,43 @@
         }).then(function (response) {
           console.log(response);
 
-          cityWeatherBlock.empty();
+          var icon = $("<img>").attr(
+            "src",
+            `https://api.openweathermap.org/img/w/${response.weather[0].icon}.png`
+          );
+          var cityTitle = $("<h1>").text(
+            `${response.name} (${moment().format("MMMM Do YYYY")})`
+          );
+          var temp = $("<p>").text(`Temperature: ${response.main.temp} F`);
+          var humidity = $("<p>").text(`Humidity: ${response.main.humidity} %`);
+          var windSpeed = $("<p>").text(
+            `Wind Speed: ${response.wind.speed} MPH`
+          );
+          cityTitle.append(icon);
+          cityWeatherBlock.append(cityTitle, temp, humidity, windSpeed);
+
+          var lat = response.coord.lat;
+          var lon = response.coord.lon;
+          displayUV(lat, lon);
+        });
+      });
+
+      $(".recent-search").on("click", function () {
+        console.log("City " + $(this).text());
+
+        // API Call
+        var city = $(this).text();
+        var queryUrl =
+          "http://api.openweathermap.org/data/2.5/weather?q=" +
+          city +
+          "&appid=6394425733f539b9019a80b7f286741b&units=imperial";
+
+        $.ajax({
+          url: queryUrl,
+          method: "GET",
+        }).then(function (response) {
+          console.log(response);
+
           var icon = $("<img>").attr(
             "src",
             `https://api.openweathermap.org/img/w/${response.weather[0].icon}.png`
@@ -187,7 +222,7 @@
 
       $(document).ready(function () {
         //Display Recent Cities
-        for (i = 0; i < searchArray.length; i++) {
+        for (i = 0; i < storedCities.length; i++) {
           var recentSearchBtn = $("<button>");
           var recentSearchTxt = $("<h4>");
           recentSearchBtn.attr("class", "recent-search");
@@ -196,7 +231,7 @@
             "border-style: solid; border-width: 1px; border-color: gray; background-color: white; border-radius: 5px; border-bottom-left-radius: 0px; border-bottom-right-radius: 0px; text-align: left; width: 100%; height: 50px;"
           );
           searchArray.push(storedCities);
-          recentSearchBtn.text(searchArray[i]);
+          recentSearchBtn.text(storedCities[i]);
           recentSearchDiv.append(recentSearchBtn);
           searchArray.push(searchInputEl.val());
         }
@@ -217,7 +252,10 @@
           console.log(response);
           var uviTxt = $("<p>").text("UV Index: ");
           var uvi = $("<span>").text(response.value);
-          uvi.attr("style", "background-color: red; color: white; padding: 7px; border-radius: 5px");
+          uvi.attr(
+            "style",
+            "background-color: red; color: white; padding: 7px; border-radius: 5px"
+          );
           uviTxt.append(uvi);
           cityWeatherBlock.append(uviTxt);
         });
