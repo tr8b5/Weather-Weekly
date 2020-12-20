@@ -108,11 +108,17 @@
               padding: 2%;
             "
           ></div>
+
+          <!-- 5 Day Forcast -->
+
+          <div class="forecast" style="margin-top: 4%; margin-right: 1%"></div>
         </div>
       </div>
     </section>
 
     <script type="text/javascript">
+      localStorage.clear();
+
       // Created Elements
 
       var searchInputEl = $("#searchQueryForm");
@@ -133,6 +139,8 @@
 
       $(searchButtonEl).on("click", function () {
         // Recent Search
+
+        cityWeatherBlock.empty();
 
         //When user clicks submit
         var recentSearchBtn = $("<button>");
@@ -180,6 +188,7 @@
           var lat = response.coord.lat;
           var lon = response.coord.lon;
           displayUV(lat, lon);
+          get5DayForcast(city);
         });
       });
 
@@ -222,6 +231,7 @@
 
       $(document).ready(function () {
         //Display Recent Cities
+
         for (i = 0; i < storedCities.length; i++) {
           var recentSearchBtn = $("<button>");
           var recentSearchTxt = $("<h4>");
@@ -238,6 +248,8 @@
       });
 
       //Funtions
+
+      //Get UVI
 
       function displayUV(lat, lon) {
         $.ajax({
@@ -258,6 +270,40 @@
           );
           uviTxt.append(uvi);
           cityWeatherBlock.append(uviTxt);
+        });
+      }
+
+      function get5DayForcast(city) {
+        var forecastBlock = $(".forecast");
+        var dayForecastContainer = $("<div>");
+        dayForecastContainer.attr("class", "col-md-12");
+
+        $.ajax({
+          url:
+            "http://api.openweathermap.org/data/2.5/forecast?q=" +
+            city +
+            "&appid=6394425733f539b9019a80b7f286741b",
+          method: "GET",
+        }).then(function (response) {
+          console.log(response);
+          console.log(moment().get('date'));
+
+          forecastBlock.empty();
+          forecastBlock.append($("<h3>").text("5 Day Forecast"));
+          forecastBlock.append(dayForecastContainer);
+
+          // inside if statement: Creates 5 blocks
+
+          for (i = 0; i < 5; i++) {
+            var dayForecastBlock = $("<div>");
+            dayForecastBlock.attr("style", "height: 200px; background-color: blue; border-radius: 5px; float: left; width: 18%; margin-right: 2%; padding: 2%")
+            dayForecastContainer.append(dayForecastBlock);
+
+            var cityTitle = $("<h1>").text(
+            `${response.name} (${moment().format("MMMM" + "Do"[i] + "YYYY")})`
+          );
+
+          }
         });
       }
     </script>
