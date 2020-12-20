@@ -120,7 +120,7 @@
       var searchContainerEl = $("#search-container");
       var recentSearchDiv = $("<div>");
       var cityWeatherBlock = $(".city-weather-block");
-      
+
       recentSearchDiv.attr("style", "margin-top: 2%; margin-bottom: 10%");
       searchContainerEl.append(recentSearchDiv);
 
@@ -181,6 +181,7 @@
 
           var lat = response.coord.lat;
           var lon = response.coord.lon;
+          displayUV(lat, lon);
         });
       });
 
@@ -203,7 +204,24 @@
 
       //Funtions
 
-      function displayWeather() {}
+      function displayUV(lat, lon) {
+        $.ajax({
+          url:
+            "http://api.openweathermap.org/data/2.5/uvi?lat=" +
+            lat +
+            "&lon=" +
+            lon +
+            "&appid=6394425733f539b9019a80b7f286741b",
+          method: "GET",
+        }).then(function (response) {
+          console.log(response);
+          var uviTxt = $("<p>").text("UV Index: ");
+          var uvi = $("<span>").text(response.value);
+          uvi.attr("style", "background-color: red; color: white; padding: 7px; border-radius: 5px");
+          uviTxt.append(uvi);
+          cityWeatherBlock.append(uviTxt);
+        });
+      }
     </script>
   </body>
 </html>
