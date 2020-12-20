@@ -12,6 +12,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <!-- Bootstrap CSS -->
+
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css"
       rel="stylesheet"
@@ -20,6 +21,7 @@
     />
 
     <!-- Bootstrap Javascript -->
+
     <script
       src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js"
       integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW"
@@ -27,13 +29,19 @@
     ></script>
 
     <!-- JQuery CDN -->
+
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
     <!-- Font Awsome -->
+
     <script
       src="https://kit.fontawesome.com/8997007773.js"
       crossorigin="anonymous"
     ></script>
+
+    <!-- Moment JS -->
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
   </head>
   <body>
     <!-- Header -->
@@ -97,6 +105,7 @@
               background-color: white;
               border-radius: 5px;
               margin-right: 1%;
+              padding: 2%;
             "
           ></div>
         </div>
@@ -110,11 +119,15 @@
       var searchButtonEl = $("#search-button");
       var searchContainerEl = $("#search-container");
       var recentSearchDiv = $("<div>");
+      var cityWeatherBlock = $(".city-weather-block");
+      
       recentSearchDiv.attr("style", "margin-top: 2%; margin-bottom: 10%");
       searchContainerEl.append(recentSearchDiv);
 
       //Created Variables
 
+      var storedCities = JSON.parse(localStorage.getItem("Cities"));
+      var storedCityArray = storedCities;
       var searchArray = [];
 
       //Seach Button
@@ -122,33 +135,75 @@
       $(searchButtonEl).on("click", function () {
         // Recent Search
 
+        //When user clicks submit
         var recentSearchBtn = $("<button>");
         var recentSearchTxt = $("<h4>");
         recentSearchBtn.attr("class", "recent-search");
         recentSearchBtn.attr(
           "style",
-          "border-style: solid; border-width: 1px; border-color: gray; background-color: white; border-radius: 5px; border-bottom-left-radius: 0px; border-bottom-right-radius: 0px; border-bottom: white; text-align: left; width: 100%; height: 50px;"
+          "border-style: solid; border-width: 1px; border-color: gray; background-color: white; border-radius: 5px; border-bottom-left-radius: 0px; border-bottom-right-radius: 0px; text-align: left; width: 100%; height: 50px;"
         );
         recentSearchBtn.text(searchInputEl.val());
         recentSearchDiv.append(recentSearchBtn);
+        searchArray.push(searchInputEl.val());
+
+        //Save recent search data
+        localStorage.setItem("Cities", JSON.stringify(searchArray));
 
         // API Call
-
         var city = searchInputEl.val();
         var queryUrl =
           "http://api.openweathermap.org/data/2.5/weather?q=" +
           city +
-          "&appid=6394425733f539b9019a80b7f286741b";
+          "&appid=6394425733f539b9019a80b7f286741b&units=imperial";
 
         $.ajax({
           url: queryUrl,
           method: "GET",
         }).then(function (response) {
           console.log(response);
+
+          cityWeatherBlock.empty();
+          var icon = $("<img>").attr(
+            "src",
+            `https://api.openweathermap.org/img/w/${response.weather[0].icon}.png`
+          );
+          var cityTitle = $("<h1>").text(
+            `${response.name} (${moment().format("MMMM Do YYYY")})`
+          );
+          var temp = $("<p>").text(`Temperature: ${response.main.temp} F`);
+          var humidity = $("<p>").text(`Humidity: ${response.main.humidity} %`);
+          var windSpeed = $("<p>").text(
+            `Wind Speed: ${response.wind.speed} MPH`
+          );
+          cityTitle.append(icon);
+          cityWeatherBlock.append(cityTitle, temp, humidity, windSpeed);
+
+          var lat = response.coord.lat;
+          var lon = response.coord.lon;
         });
       });
 
-      $(document).ready(function () {});
+      $(document).ready(function () {
+        //Display Recent Cities
+        for (i = 0; i < searchArray.length; i++) {
+          var recentSearchBtn = $("<button>");
+          var recentSearchTxt = $("<h4>");
+          recentSearchBtn.attr("class", "recent-search");
+          recentSearchBtn.attr(
+            "style",
+            "border-style: solid; border-width: 1px; border-color: gray; background-color: white; border-radius: 5px; border-bottom-left-radius: 0px; border-bottom-right-radius: 0px; text-align: left; width: 100%; height: 50px;"
+          );
+          searchArray.push(storedCities);
+          recentSearchBtn.text(searchArray[i]);
+          recentSearchDiv.append(recentSearchBtn);
+          searchArray.push(searchInputEl.val());
+        }
+      });
+
+      //Funtions
+
+      function displayWeather() {}
     </script>
   </body>
 </html>
