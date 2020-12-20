@@ -117,7 +117,7 @@
     </section>
 
     <script type="text/javascript">
-      localStorage.clear();
+      //localStorage.clear();
 
       // Created Elements
 
@@ -188,7 +188,6 @@
           var lat = response.coord.lat;
           var lon = response.coord.lon;
           displayUV(lat, lon);
-          get5DayForcast(city);
         });
       });
 
@@ -252,9 +251,13 @@
       //Get UVI
 
       function displayUV(lat, lon) {
+        var forecastBlock = $(".forecast");
+        var dayForecastContainer = $("<div>");
+        dayForecastContainer.attr("class", "col-md-12");
+
         $.ajax({
           url:
-            "http://api.openweathermap.org/data/2.5/uvi?lat=" +
+            "https://api.openweathermap.org/data/2.5/onecall?lat=" +
             lat +
             "&lon=" +
             lon +
@@ -263,46 +266,47 @@
         }).then(function (response) {
           console.log(response);
           var uviTxt = $("<p>").text("UV Index: ");
-          var uvi = $("<span>").text(response.value);
+          var uvi = $("<span>").text(response.current.uvi);
           uvi.attr(
             "style",
             "background-color: red; color: white; padding: 7px; border-radius: 5px"
           );
           uviTxt.append(uvi);
           cityWeatherBlock.append(uviTxt);
-        });
-      }
-
-      function get5DayForcast(city) {
-        var forecastBlock = $(".forecast");
-        var dayForecastContainer = $("<div>");
-        dayForecastContainer.attr("class", "col-md-12");
-
-        $.ajax({
-          url:
-            "http://api.openweathermap.org/data/2.5/forecast?q=" +
-            city +
-            "&appid=6394425733f539b9019a80b7f286741b",
-          method: "GET",
-        }).then(function (response) {
-          console.log(response);
-          console.log(moment().get('date'));
 
           forecastBlock.empty();
           forecastBlock.append($("<h3>").text("5 Day Forecast"));
           forecastBlock.append(dayForecastContainer);
 
-          // inside if statement: Creates 5 blocks
+          //Creates 5 blocks
 
           for (i = 0; i < 5; i++) {
             var dayForecastBlock = $("<div>");
-            dayForecastBlock.attr("style", "height: 200px; background-color: blue; border-radius: 5px; float: left; width: 18%; margin-right: 2%; padding: 2%")
+
+            var unixDate = new Date(response.daily[i].dt).toLocaleDateString(
+              "en-US"
+            );
+            var icon = $("<img>").attr(
+              "src",
+              `https://api.openweathermap.org/img/w/${response.daily[i].weather[0].icon}.png`
+            );
+            var temp = $("<p>").text(`Temperature: ${response.daily[i].temp.day} F`);
+            var humidity = $("<p>").text(
+              `Humidity: ${response.daily[i].humidity} %`
+            );
+            
+            dayForecastBlock.attr(
+              "style",
+              "height: 200px; background-color: blue; border-radius: 5px; float: left; width: 18%; margin-right: 2%; padding: 2%"
+            );
             dayForecastContainer.append(dayForecastBlock);
 
-            var cityTitle = $("<h1>").text(
-            `${response.name} (${moment().format("MMMM" + "Do"[i] + "YYYY")})`
-          );
+            var cityTitle = $("<h5>").text(unixDate);
+            cityTitle.attr("style", "color: white");
+            temp.attr("style", "color: white");
+            humidity.attr("style", "color: white");
 
+            dayForecastBlock.append(cityTitle, icon, temp, humidity);
           }
         });
       }
